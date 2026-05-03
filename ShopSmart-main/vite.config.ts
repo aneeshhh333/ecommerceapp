@@ -1,61 +1,20 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer()
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner()
-          ),
-        ]
-      : []),
-  ],
+  plugins: [react()],
 
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
-
-      // 🔒 Force single React instance (prevents useContext null)
-      react: path.resolve(import.meta.dirname, "node_modules/react"),
-      "react-dom": path.resolve(import.meta.dirname, "node_modules/react-dom"),
+      "@": path.resolve(__dirname, "client", "src"),
     },
   },
 
-  // ✅ Deduplicate React dependencies for production
-  optimizeDeps: {
-    dedupe: ["react", "react-dom"],
-  },
-
-  root: path.resolve(import.meta.dirname, "client"),
+  root: path.resolve(__dirname, "client"),
 
   build: {
-  outDir: path.resolve(import.meta.dirname, "dist/public"),
-  emptyOutDir: true,
-  rollupOptions: {
-    output: {
-      manualChunks: {
-        react: ["react", "react-dom"],
-      },
-    },
-  },
-},
-
-
-  server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
+    outDir: path.resolve(__dirname, "dist"),
+    emptyOutDir: true,
   },
 });
